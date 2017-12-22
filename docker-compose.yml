@@ -1,0 +1,39 @@
+version: "2.1"
+networks:
+  qiib:
+    driver: bridge
+services:
+  backend:
+    image: tomcat:8.0
+    ports:
+      - 8080:8080
+    volumes:
+      - ./data/backend/webapps/:/usr/local/tomcat/webapps:ro
+    networks:
+      - qiib
+  backoffice:
+    image: tomcat:8.0
+    ports:
+      - 8000:8080
+    volumes:
+      - ./data/backend/webapps/:/usr/local/tomcat/webapps:ro
+    networks:
+      - qiib
+  mysql:
+    image: mysql
+    ports:
+      - 3306:3306
+    volumes:
+      - ./config/mysql/conf.d:/etc/mysql/conf.d:ro
+      - ./data/mysql/:/var/lib/mysql/:rw
+    networks:
+      - qiib
+  ship:
+    image: portainer/portainer
+    mem_limit: 50m
+    networks:
+      - qiib
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
